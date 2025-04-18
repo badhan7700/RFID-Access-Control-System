@@ -12,6 +12,9 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);
 Servo myServo;
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Adjust if your LCD has a different I2C address
 
+String incomingData = "";
+bool dataReady = false;
+
 void setup() {
   Serial.begin(9600);
   SPI.begin();
@@ -25,54 +28,94 @@ void setup() {
   lcd.clear();
   lcd.backlight();
   lcd.setCursor(0, 0);
-  lcd.print("  Put card on   ");
+  lcd.print("  Toll System   ");
   lcd.setCursor(0, 1);
-  lcd.print("     reader     ");
+  lcd.print("Ready for cards ");
 
   Serial.println("System Ready. Waiting for card...");
 }
 
 void loop() {
+  // Read serial data from Node.js
+  while (Serial.available() > 0) {
+    char c = Serial.read();
+    if (c == '\n') {
+      dataReady = true;
+    } else {
+      incomingData += c;
+    }
+  }
+
+  // Process incoming command from Node.js
+  if (dataReady) {
+    if (incomingData == "ACCESS_GRANTED") {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Access Granted");
+      lcd.setCursor(0, 1);
+      lcd.print("Gate Opening...");
+      
+      // Sound success tone
+      tone(BUZZER, 500);
+      delay(300);
+      noTone(BUZZER);
+      
+      // Open gate
+      myServo.write(90);
+      delay(5000);
+      myServo.write(0);
+      
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("  Toll System   ");
+      lcd.setCursor(0, 1);
+      lcd.print("Ready for cards ");
+    } 
+    else if (incomingData == "ACCESS_DENIED") {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Access Denied");
+      lcd.setCursor(0, 1);
+      lcd.print("Insuff. Balance");
+      
+      // Sound error tone
+      tone(BUZZER, 300);
+      delay(1000);
+      noTone(BUZZER);
+      
+      delay(3000);
+      
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("  Toll System   ");
+      lcd.setCursor(0, 1);
+      lcd.print("Ready for cards ");
+    }
+    
+    incomingData = "";
+    dataReady = false;
+  }
+
+  // Check for new card
   if (!mfrc522.PICC_IsNewCardPresent()) return;
   if (!mfrc522.PICC_ReadCardSerial()) return;
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("UID tag:");
+  lcd.print("Card Detected");
+  lcd.setCursor(0, 1);
+  lcd.print("Processing...");
 
   String content = "";
   for (byte i = 0; i < mfrc522.uid.size; i++) {
-    lcd.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    lcd.print(mfrc522.uid.uidByte[i], HEX);
     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
   content.toUpperCase();
 
-  // ✨ THIS is the line that your Node.js backend listens for:
+  // Send UID to Node.js backend
   Serial.print("UID:");
-  Serial.println(content);
-
-  lcd.setCursor(0, 1);
-  if (content.substring(1) == "C0 5F 6E 1D") {  // Replace with your actual UID
-    lcd.print("Access Granted");
-    tone(BUZZER, 500);
-    delay(300);
-    noTone(BUZZER);
-    myServo.write(90);
-    delay(5000);
-    myServo.write(0);
-  } else {
-    lcd.print("Access Denied");
-    tone(BUZZER, 300);
-    delay(2000);
-    noTone(BUZZER);
-  }
-
-  delay(2000);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("  Put card on   ");
-  lcd.setCursor(0, 1);
-  lcd.print("     reader     ");
+  Serial.println(content.substring(1));
+  
+  delay(1000);  // Wait for server response
 }

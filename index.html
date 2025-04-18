@@ -3,57 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RFID Dashboard</title>
+    <title>RFID Toll System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>RFID Web Dashboard</h1>
+            <h1>RFID Toll System Dashboard</h1>
             <div id="connection-status" class="status">
                 <span class="status-dot"></span>
                 <span class="status-text">Serial Status: Checking...</span>
             </div>
         </header>
 
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="dashboard">Dashboard</button>
+            <button class="tab-button" data-tab="balances">Balance Management</button>
+            <button class="tab-button" data-tab="logs">Scan Logs</button>
+        </nav>
+
         <main>
-            <section class="latest-scan">
-                <h2>Latest Scan</h2>
-                <div class="card" id="latest-uid-card">
-                    <div class="uid-display">
-                        <h3>UID:</h3>
-                        <p id="latest-uid">None</p>
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="card info-card">
+                        <h3>System Info</h3>
+                        <div class="info-item">
+                            <span>Toll Amount:</span>
+                            <span id="toll-amount">Loading...</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Active Users:</span>
+                            <span id="active-users">Loading...</span>
+                        </div>
                     </div>
-                    <div class="scan-info">
-                        <p>Timestamp: <span id="latest-timestamp">-</span></p>
-                        <p>Access: <span id="latest-access" class="neutral">N/A</span></p>
+
+                    <div class="card">
+                        <h3>Latest Scan</h3>
+                        <div class="uid-display">
+                            <h4>UID:</h4>
+                            <p id="latest-uid">None</p>
+                        </div>
+                        <div class="scan-info">
+                            <p>Timestamp: <span id="latest-timestamp">-</span></p>
+                            <p>Access: <span id="latest-access" class="neutral">N/A</span></p>
+                            <p>Balance: <span id="latest-balance">-</span></p>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section class="logs">
-                <h2>Scan History</h2>
-                <div class="table-container">
-                    <table id="logs-table">
-                        <thead>
-                            <tr>
-                                <th>UID</th>
-                                <th>Timestamp</th>
-                                <th>Access</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-body">
-                            <tr>
-                                <td colspan="3" class="center">Loading logs...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Balance Management Tab -->
+            <section id="balances" class="tab-content">
+                <div class="card">
+                    <h3>Add/Update Balance</h3>
+                    <form id="balance-form" class="balance-form">
+                        <div class="form-group">
+                            <label for="uid-input">Card UID:</label>
+                            <input type="text" id="uid-input" required placeholder="e.g., C0 5F 6E 1D">
+                        </div>
+                        <div class="form-group">
+                            <label for="amount-input">Amount to Add:</label>
+                            <input type="number" id="amount-input" required min="1" value="100">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Balance</button>
+                    </form>
+                    <div id="balance-message" class="message"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Current Balances</h3>
+                    <div class="table-container">
+                        <table id="balances-table">
+                            <thead>
+                                <tr>
+                                    <th>UID</th>
+                                    <th>Current Balance</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="balances-body">
+                                <tr>
+                                    <td colspan="3" class="center">Loading balances...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logs Tab -->
+            <section id="logs" class="tab-content">
+                <div class="card">
+                    <h3>Scan History</h3>
+                    <div class="table-container">
+                        <table id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>UID</th>
+                                    <th>Timestamp</th>
+                                    <th>Access</th>
+                                    <th>Balance</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-body">
+                                <tr>
+                                    <td colspan="5" class="center">Loading logs...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>
 
         <footer>
-            <p>Simple RFID Web Dashboard - Arduino Uno + MFRC522</p>
+            <p>RFID Toll System Dashboard - Arduino + MFRC522 + Node.js</p>
         </footer>
     </div>
 
