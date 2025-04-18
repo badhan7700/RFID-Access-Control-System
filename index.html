@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RFID Web Dashboard</h1>
+            <div id="connection-status" class="status">
+                <span class="status-dot"></span>
+                <span class="status-text">Serial Status: Checking...</span>
+            </div>
+        </header>
+
+        <main>
+            <section class="latest-scan">
+                <h2>Latest Scan</h2>
+                <div class="card" id="latest-uid-card">
+                    <div class="uid-display">
+                        <h3>UID:</h3>
+                        <p id="latest-uid">None</p>
+                    </div>
+                    <div class="scan-info">
+                        <p>Timestamp: <span id="latest-timestamp">-</span></p>
+                        <p>Access: <span id="latest-access" class="neutral">N/A</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="logs">
+                <h2>Scan History</h2>
+                <div class="table-container">
+                    <table id="logs-table">
+                        <thead>
+                            <tr>
+                                <th>UID</th>
+                                <th>Timestamp</th>
+                                <th>Access</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-body">
+                            <tr>
+                                <td colspan="3" class="center">Loading logs...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Simple RFID Web Dashboard - Arduino Uno + MFRC522</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
