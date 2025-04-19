@@ -16,7 +16,7 @@ const tabContents = document.querySelectorAll('.tab-content');
 
 // Format currency
 function formatCurrency(amount) {
-    return '₹' + Number(amount).toFixed(2);
+    return 'TK ' + Number(amount).toFixed(2);
 }
 
 // Format datetime

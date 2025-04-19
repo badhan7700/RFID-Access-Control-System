@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const BALANCE_FILE = path.join(__dirname, 'data', 'balances.json');
-const TOLL_AMOUNT = 20; // Fixed toll amount (e.g., ₹20)
+const TOLL_AMOUNT = 250; // Fixed toll amount (e.g., ₹20)
 const MIN_TOPUP_AMOUNT = 10; // Minimum amount for top-up
 const MAX_TOPUP_AMOUNT = 10000; // Maximum amount for top-up
 
